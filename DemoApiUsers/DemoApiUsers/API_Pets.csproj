@@ -9,8 +9,5 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="models\" />
-    <Folder Include="services\" />
-  </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>
