@@ -1,4 +1,5 @@
-﻿using DemoApiUsers.models;
+﻿using API.models;
+using DemoApiUsers.models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -212,6 +213,53 @@ namespace DemoApiUsers.services
                 _connection.Close();
             }
             return new ResponseBase<IEnumerable<ServicioCita>> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = listaServicios };
+        }
+
+        public async Task<ResponseBase<int>> AgregarCita(Cita cita)
+        {
+            var param_idUsuario = new SqlParameter("@idUsuario", System.Data.SqlDbType.Int);
+            param_idUsuario.Value = cita.idUsuario;
+            var param_idServicio = new SqlParameter("@idServicio", System.Data.SqlDbType.Int);
+            param_idServicio.Value = cita.idServicio;
+            var param_inicio = new SqlParameter("@inicio", System.Data.SqlDbType.DateTime);
+            param_inicio.Value = cita.fechaInicio;
+
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+            var param_mensaje = new SqlParameter("@mensaje", System.Data.SqlDbType.NVarChar, -1);
+            param_mensaje.Direction = System.Data.ParameterDirection.Output;
+            var param_idCita = new SqlParameter("@idCitaOut", System.Data.SqlDbType.Int);
+            param_idCita.Direction = System.Data.ParameterDirection.Output;
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_agregar_cita";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_idUsuario);
+                    comando.Parameters.Add(param_idServicio);
+                    comando.Parameters.Add(param_inicio);
+                    comando.Parameters.Add(param_error);
+                    comando.Parameters.Add(param_mensaje);
+                    comando.Parameters.Add(param_idCita);
+                    var reader = await comando.ExecuteNonQueryAsync();
+
+                }
+            }
+            catch
+            {
+                return new ResponseBase<int> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = -1 };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = (int)param_idCita.Value };
         }
     }
 }

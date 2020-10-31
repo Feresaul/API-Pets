@@ -1,4 +1,5 @@
-﻿using DemoApiUsers.models;
+﻿using API.models;
+using DemoApiUsers.models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,6 @@ namespace DemoApiUsers.services
         Task<ResponseBase<IEnumerable<ServicioCita>>> ObtenerHistorial(int idUsuario);
         Task<ResponseBase<IEnumerable<ServicioCita>>> ObtenerCitasPendientes(int idUsuario);
         Task<ResponseBase<int>> CancelarCita(int idCita);
+        Task<ResponseBase<int>> AgregarCita(Cita cita);
     }
 }
