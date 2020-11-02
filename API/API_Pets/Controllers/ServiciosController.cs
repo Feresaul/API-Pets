@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.models;
+using DemoApiUsers.models;
 using DemoApiUsers.services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,14 @@ namespace DemoApiUsers.Controllers
         public ServiciosController(IDbService_Services servicioBD)
         {
             _servicioBD = servicioBD;
+        }
+
+        [HttpPost]
+        [Route("obtenerHoras")]
+        public async Task<IActionResult> ObtenerHoras([FromBody] ServicioHoras servicio)
+        {
+            var result = await _servicioBD.ObtenerHoras(servicio);
+            return Ok(result);
         }
 
         [HttpGet]

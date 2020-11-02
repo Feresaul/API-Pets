@@ -14,5 +14,6 @@ namespace DemoApiUsers.services
         Task<ResponseBase<IEnumerable<ServicioCita>>> ObtenerCitasPendientes(int idUsuario);
         Task<ResponseBase<int>> CancelarCita(int idCita);
         Task<ResponseBase<int>> AgregarCita(Cita cita);
+        Task<ResponseBase<Horas<IEnumerable<string>>>> ObtenerHoras(ServicioHoras servicio);
     }
 }
