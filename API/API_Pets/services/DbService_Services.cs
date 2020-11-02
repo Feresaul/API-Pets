@@ -261,5 +261,69 @@ namespace DemoApiUsers.services
             }
             return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = (int)param_idCita.Value };
         }
+
+        public async Task<ResponseBase<Horas<IEnumerable<string>>>> ObtenerHoras(ServicioHoras servicio)
+        {
+            var param_id = new SqlParameter("@idServicio", System.Data.SqlDbType.Int);
+            param_id.Value = servicio.idTipoServicio;
+            var param_fecha = new SqlParameter("@fecha", System.Data.SqlDbType.DateTime);
+            param_fecha.Value = servicio.fechaInicio;
+           
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+            var param_mensaje = new SqlParameter("@mensaje", System.Data.SqlDbType.NVarChar, -1);
+            param_mensaje.Direction = System.Data.ParameterDirection.Output;
+
+            var param_inicio = new SqlParameter("@inicio", System.Data.SqlDbType.NVarChar, 50);
+            param_inicio.Direction = System.Data.ParameterDirection.Output;
+            var param_termino = new SqlParameter("@termino", System.Data.SqlDbType.NVarChar, 50);
+            param_termino.Direction = System.Data.ParameterDirection.Output;
+            var param_tiempo = new SqlParameter("@tiempo", System.Data.SqlDbType.Int);
+            param_tiempo.Direction = System.Data.ParameterDirection.Output;
+
+            var listaHoras = new List<string>();
+            var modelo = new Horas<IEnumerable<string>>();
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_obtener_horas";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_id);
+                    comando.Parameters.Add(param_fecha);
+                    comando.Parameters.Add(param_error);
+                    comando.Parameters.Add(param_mensaje);
+                    comando.Parameters.Add(param_inicio);
+                    comando.Parameters.Add(param_termino);
+                    comando.Parameters.Add(param_tiempo);
+                    var reader = await comando.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        listaHoras.Add(reader["fechaEntrada"].ToString());
+                    }
+                    modelo.arrayHoras = listaHoras;
+                }
+            }
+            catch
+            {
+                return new ResponseBase<Horas<IEnumerable<string>>> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = null };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            
+            modelo.inicio = param_inicio.Value.ToString();
+            modelo.termino = param_termino.Value.ToString();
+            modelo.tiempo = (int)param_tiempo.Value;
+            return new ResponseBase<Horas<IEnumerable<string>>> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = modelo };
+
+        }
     }
 }
