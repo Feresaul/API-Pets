@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -304,7 +305,9 @@ namespace DemoApiUsers.services
 
                     while (reader.Read())
                     {
-                        listaHoras.Add(reader["fechaEntrada"].ToString());
+                        DateTime addedDate = (DateTime)reader["fechaEntrada"];
+                        string addedDateText = addedDate.ToString("yyyy/mm/dd HH:mm:ss", CultureInfo.InvariantCulture);
+                        listaHoras.Add(addedDateText);
                     }
                     modelo.arrayHoras = listaHoras;
                 }
