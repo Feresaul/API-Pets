@@ -70,6 +70,89 @@ namespace API_Pets.services
             return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = (int)param_id.Value };
         }
 
+        public async Task<ResponseBase<Usuario>> getUser(int id)
+        {
+            var param_idusuario = new SqlParameter("@id", System.Data.SqlDbType.Int);
+            param_idusuario.Value = id;
+
+            var usuario = new Usuario();
+
+            try
+            {
+                _connection.Open();
+
+                if(_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = $"mt_get_user";
+                    SqlCommand command = new SqlCommand(sql, _connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    command.Parameters.Add(param_idusuario);
+
+                    var reader = await command.ExecuteReaderAsync();
+
+                    while(reader.Read())
+                    {
+                        usuario.id = id;
+                        usuario.nombreCompleto = reader["nombre"].ToString();
+                        usuario.usuario = reader["usuario"].ToString();
+                        usuario.email = reader["correo"].ToString();
+                        usuario.telefono = reader["telefono"].ToString();
+                    }
+                }
+
+                return new ResponseBase<Usuario> { TieneError = false, Mensaje = "User obtained correctly", Modelo = usuario };
+            }
+            catch
+            {
+                return new ResponseBase<Usuario> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = null };
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
+        public async Task<ResponseBase<IEnumerable<Usuario>>> getUsers(int id)
+        {
+            try
+            {
+                var userList = new List<Usuario>();
+                _connection.Open();
+
+                if(_connection.State == System.Data.ConnectionState.Open)
+                {
+                    var param_id = new SqlParameter("@id", System.Data.SqlDbType.Int);
+                    param_id.Value = id;
+
+                    string sql = "mt_get_users";
+                    SqlCommand command = new SqlCommand(sql, _connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    command.Parameters.Add(param_id);
+
+                    var reader = await command.ExecuteReaderAsync();
+
+                    while(reader.Read())
+                    {
+                        var user = new Usuario();
+                        user.id = int.Parse(reader["idUsuario"].ToString());
+                        user.nombreCompleto = reader["nombre"].ToString();
+                        user.usuario = reader["usuario"].ToString();
+                        user.email = reader["correo"].ToString();
+                        user.telefono = reader["telefono"].ToString();
+                        userList.Add(user);
+                    }
+                }
+
+                return new ResponseBase<IEnumerable<Usuario>> { TieneError = false, Mensaje = "User list obtained correctly.", Modelo = userList };
+            } catch
+            {
+                return new ResponseBase<IEnumerable<Usuario>> { TieneError = true, Mensaje = "Error while obtaining user list.", Modelo = null };
+            } finally
+            {
+                _connection.Close();
+            }
+        }
+
         public async Task<ResponseBase<int>> registro(Usuario usuario)
         {
             var param_usuario = new SqlParameter("@usuario", System.Data.SqlDbType.NVarChar, 50);

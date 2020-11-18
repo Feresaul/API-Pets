@@ -35,5 +35,21 @@ namespace API_Pets.Controllers
             var result = await _servicioBD.registro(usuario);
             return Ok(result);
         }
+
+        [HttpPost]
+        [Route("getUser")]
+        public async Task<IActionResult> GetUser(int id)
+        {
+            var result = await _servicioBD.getUser(id);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("getUsers")]
+        public async Task<IActionResult> GetUsers(int id)
+        {
+            var result = await _servicioBD.getUsers(id);
+            return Ok(result);
+        }
     }
 }

@@ -11,5 +11,7 @@ namespace API_Pets.services
     {
         Task<ResponseBase<int>> logIn(Usuario usuario);
         Task<ResponseBase<int>> registro(Usuario usuario);
+        Task<ResponseBase<Usuario>> getUser(int id);
+        Task<ResponseBase<IEnumerable<Usuario>>> getUsers(int id);
     }
 }
