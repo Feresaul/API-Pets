@@ -68,5 +68,13 @@ namespace DemoApiUsers.Controllers
             var result = await _servicioBD.AgregarCita(cita);
             return Ok(result);
         }
+
+        [HttpGet]
+        [Route("getSales")]
+        public async Task<IActionResult> GetSales()
+        {
+            var result = await _servicioBD.getSales();
+            return Ok(result);
+        }
     }
 }

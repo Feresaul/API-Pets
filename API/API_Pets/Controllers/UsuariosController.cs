@@ -37,6 +37,22 @@ namespace API_Pets.Controllers
         }
 
         [HttpPost]
+        [Route("updateUser")]
+        public async Task<IActionResult> UpdateUser([FromBody] Usuario user)
+        {
+            var result = await _servicioBD.updateUser(user);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("deleteUser")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var result = await _servicioBD.deleteUser(id);
+            return Ok(result);
+        }
+
+        [HttpPost]
         [Route("getUser")]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -51,5 +67,6 @@ namespace API_Pets.Controllers
             var result = await _servicioBD.getUsers(id);
             return Ok(result);
         }
+
     }
 }
