@@ -76,5 +76,13 @@ namespace DemoApiUsers.Controllers
             var result = await _servicioBD.getSales();
             return Ok(result);
         }
+
+        [HttpPost]
+        [Route("getSalesPerDate")]
+        public async Task<IActionResult> GetSalesPerDate(string start, string end)
+        {
+            var result = await _servicioBD.getSalesPerDate(start, end);
+            return Ok(result);
+        }
     }
 }

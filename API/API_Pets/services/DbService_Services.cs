@@ -60,6 +60,52 @@ namespace DemoApiUsers.services
             }
         }
 
+        public async Task<ResponseBase<IEnumerable<Venta>>> getSalesPerDate(string startDate, string endDate)
+        {
+            try
+            {
+                var salesList = new List<Venta>();
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_get_sales_per_date";
+                    SqlCommand command = new SqlCommand(sql, _connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    var param_start = new SqlParameter("@start_date", System.Data.SqlDbType.NVarChar, -1);
+                    param_start.Value = startDate;
+                    var param_end = new SqlParameter("@end_date", System.Data.SqlDbType.NVarChar, -1);
+                    param_end.Value = endDate;
+                    command.Parameters.Add(param_start);
+                    command.Parameters.Add(param_end);
+
+                    var reader = await command.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        var sale = new Venta();
+                        sale.service = reader["Service"].ToString();
+                        sale.employee = reader["Employee"].ToString();
+                        sale.client = reader["Client"].ToString();
+                        sale.date = reader["Date"].ToString();
+                        sale.total = reader["Total"].ToString();
+                        salesList.Add(sale);
+                    }
+                }
+
+                return new ResponseBase<IEnumerable<Venta>> { TieneError = false, Mensaje = "Sales obtained correctly.", Modelo = salesList };
+            }
+            catch
+            {
+                return new ResponseBase<IEnumerable<Venta>> { TieneError = true, Mensaje = "Error while obtaining sales.", Modelo = null };
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+        }
+
         public async Task<ResponseBase<int>> CancelarCita(int idCita)
         {
             var param_idCita = new SqlParameter("@idCita", System.Data.SqlDbType.Int);
