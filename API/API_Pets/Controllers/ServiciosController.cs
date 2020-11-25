@@ -69,6 +69,22 @@ namespace DemoApiUsers.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
+        [Route("deleteService")]
+        public async Task<IActionResult> DeleteService(int id)
+        {
+            var result = await _servicioBD.deleteService(id);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("getServices")]
+        public async Task<IActionResult> GetServices()
+        {
+            var result = await _servicioBD.getServices();
+            return Ok(result);
+        }
+
         [HttpGet]
         [Route("getSales")]
         public async Task<IActionResult> GetSales()

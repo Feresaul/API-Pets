@@ -22,6 +22,81 @@ namespace DemoApiUsers.services
             _connection = new SqlConnection(connString);
         }
 
+        public async Task<ResponseBase<int>> deleteService(int id)
+        {
+            var param_id = new SqlParameter("@id", System.Data.SqlDbType.Int);
+            param_id.Value = id;
+
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_delete_service";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_id);
+                    comando.Parameters.Add(param_error);
+                    var reader = await comando.ExecuteNonQueryAsync();
+
+                }
+            }
+            catch
+            {
+                return new ResponseBase<int> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = -1 };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = "Service deleted successfully", Modelo = Convert.ToInt32(!(bool)param_error.Value) };
+
+        }
+
+        public async Task<ResponseBase<IEnumerable<DetailedService>>> getServices()
+        {
+            try
+            {
+                var servicesList = new List<DetailedService>();
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_get_services";
+                    SqlCommand command = new SqlCommand(sql, _connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    var reader = await command.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        var service = new DetailedService();
+                        service.id = int.Parse(reader["idService"].ToString());
+                        service.nombre = reader["Service"].ToString();
+                        service.precio = float.Parse(reader["Price"].ToString());
+                        service.tiempo = int.Parse(reader["Time"].ToString());
+                        service.type = reader["Type"].ToString();
+                        servicesList.Add(service);
+                    }
+                }
+
+                return new ResponseBase<IEnumerable<DetailedService>> { TieneError = false, Mensaje = "Services obtained correctly.", Modelo = servicesList };
+            }
+            catch
+            {
+                return new ResponseBase<IEnumerable<DetailedService>> { TieneError = true, Mensaje = "Error while obtaining services.", Modelo = null };
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+        }
+
         public async Task<ResponseBase<IEnumerable<Venta>>> getSales()
         {
             try
