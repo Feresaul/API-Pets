@@ -18,6 +18,7 @@ namespace DemoApiUsers.services
         Task<ResponseBase<IEnumerable<Venta>>> getSales();
         Task<ResponseBase<IEnumerable<Venta>>> getSalesPerDate(string startDate, string endDate);
         Task<ResponseBase<IEnumerable<DetailedService>>> getServices();
+        Task<ResponseBase<int>> updateService(DetailedService service);
         Task<ResponseBase<int>> deleteService(int id);
     }
 }

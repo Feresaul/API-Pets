@@ -70,6 +70,14 @@ namespace DemoApiUsers.Controllers
         }
 
         [HttpPost]
+        [Route("updateService")]
+        public async Task<IActionResult> UpdateService([FromBody] DetailedService service)
+        {
+            var result = await _servicioBD.updateService(service);
+            return Ok(result);
+        }
+
+        [HttpPost]
         [Route("deleteService")]
         public async Task<IActionResult> DeleteService(int id)
         {

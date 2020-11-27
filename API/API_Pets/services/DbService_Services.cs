@@ -22,6 +22,60 @@ namespace DemoApiUsers.services
             _connection = new SqlConnection(connString);
         }
 
+        public async Task<ResponseBase<int>> updateService(DetailedService service)
+        {
+            var param_id = new SqlParameter("@id", System.Data.SqlDbType.Int);
+            param_id.Value = service.id;
+
+            var param_name = new SqlParameter("@service", System.Data.SqlDbType.NVarChar, 100);
+            param_name.Value = service.nombre;
+
+            var param_price = new SqlParameter("@price", System.Data.SqlDbType.Money);
+            param_price.Value = service.precio;
+
+            var param_time = new SqlParameter("@time", System.Data.SqlDbType.Int);
+            param_time.Value = service.tiempo;
+
+            var param_type = new SqlParameter("@type", System.Data.SqlDbType.NVarChar, -1);
+            param_type.Value = service.type;
+
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+            var param_mensaje = new SqlParameter("@message", System.Data.SqlDbType.NVarChar, -1);
+            param_mensaje.Direction = System.Data.ParameterDirection.Output;
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_update_service";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_name);
+                    comando.Parameters.Add(param_price);
+                    comando.Parameters.Add(param_time);
+                    comando.Parameters.Add(param_type);
+                    comando.Parameters.Add(param_id);
+                    comando.Parameters.Add(param_error);
+                    comando.Parameters.Add(param_mensaje);
+                    var reader = await comando.ExecuteNonQueryAsync();
+
+                }
+            }
+            catch
+            {
+                return new ResponseBase<int> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = -1 };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = service.id };
+        }
+
         public async Task<ResponseBase<int>> deleteService(int id)
         {
             var param_id = new SqlParameter("@id", System.Data.SqlDbType.Int);
