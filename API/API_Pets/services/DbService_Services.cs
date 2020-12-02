@@ -22,6 +22,333 @@ namespace DemoApiUsers.services
             _connection = new SqlConnection(connString);
         }
 
+        public async Task<ResponseBase<int>> addService(DetailedService service)
+        {
+            var param_name = new SqlParameter("@service", System.Data.SqlDbType.NVarChar, 100);
+            param_name.Value = service.nombre;
+
+            var param_price = new SqlParameter("@price", System.Data.SqlDbType.Money);
+            param_price.Value = service.precio;
+
+            var param_time = new SqlParameter("@time", System.Data.SqlDbType.Int);
+            param_time.Value = service.tiempo;
+
+            var param_type = new SqlParameter("@type", System.Data.SqlDbType.NVarChar, -1);
+            param_type.Value = service.type;
+
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+            var param_mensaje = new SqlParameter("@message", System.Data.SqlDbType.NVarChar, -1);
+            param_mensaje.Direction = System.Data.ParameterDirection.Output;
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_add_service";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_name);
+                    comando.Parameters.Add(param_price);
+                    comando.Parameters.Add(param_time);
+                    comando.Parameters.Add(param_type);
+                    comando.Parameters.Add(param_error);
+                    comando.Parameters.Add(param_mensaje);
+                    var reader = await comando.ExecuteNonQueryAsync();
+
+                }
+            }
+            catch
+            {
+                return new ResponseBase<int> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = -1 };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = service.id };
+        }
+
+        public async Task<ResponseBase<int>> updateService(DetailedService service)
+        {
+            var param_id = new SqlParameter("@id", System.Data.SqlDbType.Int);
+            param_id.Value = service.id;
+
+            var param_name = new SqlParameter("@service", System.Data.SqlDbType.NVarChar, 100);
+            param_name.Value = service.nombre;
+
+            var param_price = new SqlParameter("@price", System.Data.SqlDbType.Money);
+            param_price.Value = service.precio;
+
+            var param_time = new SqlParameter("@time", System.Data.SqlDbType.Int);
+            param_time.Value = service.tiempo;
+
+            var param_type = new SqlParameter("@type", System.Data.SqlDbType.NVarChar, -1);
+            param_type.Value = service.type;
+
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+            var param_mensaje = new SqlParameter("@message", System.Data.SqlDbType.NVarChar, -1);
+            param_mensaje.Direction = System.Data.ParameterDirection.Output;
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_update_service";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_name);
+                    comando.Parameters.Add(param_price);
+                    comando.Parameters.Add(param_time);
+                    comando.Parameters.Add(param_type);
+                    comando.Parameters.Add(param_id);
+                    comando.Parameters.Add(param_error);
+                    comando.Parameters.Add(param_mensaje);
+                    var reader = await comando.ExecuteNonQueryAsync();
+
+                }
+            }
+            catch
+            {
+                return new ResponseBase<int> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = -1 };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = service.id };
+        }
+
+        public async Task<ResponseBase<int>> deleteService(int id)
+        {
+            var param_id = new SqlParameter("@id", System.Data.SqlDbType.Int);
+            param_id.Value = id;
+
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_delete_service";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_id);
+                    comando.Parameters.Add(param_error);
+                    var reader = await comando.ExecuteNonQueryAsync();
+
+                }
+            }
+            catch
+            {
+                return new ResponseBase<int> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = -1 };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = "Service deleted successfully", Modelo = Convert.ToInt32(!(bool)param_error.Value) };
+
+        }
+
+        public async Task<ResponseBase<IEnumerable<DetailedService>>> getServices()
+        {
+            try
+            {
+                var servicesList = new List<DetailedService>();
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_get_services";
+                    SqlCommand command = new SqlCommand(sql, _connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    var reader = await command.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        var service = new DetailedService();
+                        service.id = int.Parse(reader["idService"].ToString());
+                        service.nombre = reader["Service"].ToString();
+                        service.precio = float.Parse(reader["Price"].ToString());
+                        service.tiempo = int.Parse(reader["Time"].ToString());
+                        service.type = reader["Type"].ToString();
+                        servicesList.Add(service);
+                    }
+                }
+
+                return new ResponseBase<IEnumerable<DetailedService>> { TieneError = false, Mensaje = "Services obtained correctly.", Modelo = servicesList };
+            }
+            catch
+            {
+                return new ResponseBase<IEnumerable<DetailedService>> { TieneError = true, Mensaje = "Error while obtaining services.", Modelo = null };
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+        }
+        public async Task<ResponseBase<IEnumerable<Capacity>>> getCapacity()
+        {
+            try
+            {
+                var capacityList = new List<Capacity>();
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_get_capacity";
+                    SqlCommand command = new SqlCommand(sql, _connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    var reader = await command.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        var cap = new Capacity();
+                        cap.id = int.Parse(reader["id"].ToString());
+                        cap.numberCapacity = int.Parse(reader["capacidad"].ToString());
+                        cap.description = reader["descripcion"].ToString();                        capacityList.Add(cap);
+                    }
+                }
+
+                return new ResponseBase<IEnumerable<Capacity>> { TieneError = false, Mensaje = "Capacity obtained correctly.", Modelo = capacityList };
+            }
+            catch
+            {
+                return new ResponseBase<IEnumerable<Capacity>> { TieneError = true, Mensaje = "Error while obtaining capacity.", Modelo = null };
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
+        public async Task<ResponseBase<int>> updateCapacity(Capacity capacity)
+        {
+            var param_id = new SqlParameter("@id", System.Data.SqlDbType.Int);
+            param_id.Value = capacity.id;
+            var param_capacity = new SqlParameter("@capacity", System.Data.SqlDbType.Int);
+            param_capacity.Value = capacity.numberCapacity;
+
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+            var param_mensaje = new SqlParameter("@message", System.Data.SqlDbType.NVarChar, -1);
+            param_mensaje.Direction = System.Data.ParameterDirection.Output;
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_update_capacity";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_id);
+                    comando.Parameters.Add(param_capacity);
+                    comando.Parameters.Add(param_error);
+                    comando.Parameters.Add(param_mensaje);
+                    var reader = await comando.ExecuteNonQueryAsync();
+
+                }
+            }
+            catch
+            {
+                return new ResponseBase<int> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = -1 };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = 1 };
+        }
+        public async Task<ResponseBase<ClinicHours>> getClinicHours()
+        {
+            try
+            {
+                var hours = new ClinicHours();
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_get_hours";
+                    SqlCommand command = new SqlCommand(sql, _connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    var reader = await command.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        hours.openingHour = reader["horaApertura"].ToString();
+                        hours.closingHour = reader["horaCierre"].ToString();
+                    }
+                }
+
+                return new ResponseBase<ClinicHours> { TieneError = false, Mensaje = "Hours obtained correctly.", Modelo = hours };
+            }
+            catch
+            {
+                return new ResponseBase<ClinicHours> { TieneError = true, Mensaje = "Error while obtaining services.", Modelo = null };
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
+        public async Task<ResponseBase<int>> updateClinicHours(ClinicHours hours)
+        {
+            var param_opening = new SqlParameter("@opening", System.Data.SqlDbType.NVarChar, 50);
+            param_opening.Value = hours.openingHour;
+            var param_closing = new SqlParameter("@closing", System.Data.SqlDbType.NVarChar, 50);
+            param_closing.Value = hours.closingHour;
+
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+            var param_mensaje = new SqlParameter("@message", System.Data.SqlDbType.NVarChar, -1);
+            param_mensaje.Direction = System.Data.ParameterDirection.Output;
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_update_hours";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_opening);
+                    comando.Parameters.Add(param_closing);
+                    comando.Parameters.Add(param_error);
+                    comando.Parameters.Add(param_mensaje);
+                    var reader = await comando.ExecuteNonQueryAsync();
+
+                }
+            }
+            catch
+            {
+                return new ResponseBase<int> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = -1 };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = 1 };
+        }
+
         public async Task<ResponseBase<IEnumerable<Venta>>> getSales()
         {
             try

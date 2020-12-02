@@ -69,6 +69,70 @@ namespace DemoApiUsers.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
+        [Route("updateService")]
+        public async Task<IActionResult> UpdateService([FromBody] DetailedService service)
+        {
+            var result = await _servicioBD.updateService(service);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("addService")]
+        public async Task<IActionResult> AddService([FromBody] DetailedService service)
+        {
+            var result = await _servicioBD.addService(service);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("deleteService")]
+        public async Task<IActionResult> DeleteService(int id)
+        {
+            var result = await _servicioBD.deleteService(id);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("getServices")]
+        public async Task<IActionResult> GetServices()
+        {
+            var result = await _servicioBD.getServices();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("getCapacity")]
+        public async Task<IActionResult> GetCapacity()
+        {
+            var result = await _servicioBD.getCapacity();
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("updateCapacity")]
+        public async Task<IActionResult> UpdateCapacity([FromBody] Capacity capacity)
+        {
+            var result = await _servicioBD.updateCapacity(capacity);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("getClinicHours")]
+        public async Task<IActionResult> GetClinicHours()
+        {
+            var result = await _servicioBD.getClinicHours();
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("updateClinicHours")]
+        public async Task<IActionResult> UpdateClinicHours([FromBody] ClinicHours hours)
+        {
+            var result = await _servicioBD.updateClinicHours(hours);
+            return Ok(result);
+        }
+
         [HttpGet]
         [Route("getSales")]
         public async Task<IActionResult> GetSales()

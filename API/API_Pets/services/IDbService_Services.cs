@@ -17,5 +17,13 @@ namespace DemoApiUsers.services
         Task<ResponseBase<Horas<IEnumerable<string>>>> ObtenerHoras(ServicioHoras servicio);
         Task<ResponseBase<IEnumerable<Venta>>> getSales();
         Task<ResponseBase<IEnumerable<Venta>>> getSalesPerDate(string startDate, string endDate);
+        Task<ResponseBase<IEnumerable<DetailedService>>> getServices();
+        Task<ResponseBase<int>> updateService(DetailedService service);
+        Task<ResponseBase<int>> addService(DetailedService service);
+        Task<ResponseBase<int>> deleteService(int id);
+        Task<ResponseBase<ClinicHours>> getClinicHours();
+        Task<ResponseBase<IEnumerable<Capacity>>> getCapacity();
+        Task<ResponseBase<int>> updateClinicHours(ClinicHours hours);
+        Task<ResponseBase<int>> updateCapacity(Capacity capacity);
     }
 }
