@@ -21,5 +21,9 @@ namespace DemoApiUsers.services
         Task<ResponseBase<int>> updateService(DetailedService service);
         Task<ResponseBase<int>> addService(DetailedService service);
         Task<ResponseBase<int>> deleteService(int id);
+        Task<ResponseBase<ClinicHours>> getClinicHours();
+        Task<ResponseBase<IEnumerable<Capacity>>> getCapacity();
+        Task<ResponseBase<int>> updateClinicHours(ClinicHours hours);
+        Task<ResponseBase<int>> updateCapacity(Capacity capacity);
     }
 }

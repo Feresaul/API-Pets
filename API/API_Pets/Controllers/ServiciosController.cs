@@ -102,6 +102,38 @@ namespace DemoApiUsers.Controllers
         }
 
         [HttpGet]
+        [Route("getCapacity")]
+        public async Task<IActionResult> GetCapacity()
+        {
+            var result = await _servicioBD.getCapacity();
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("updateCapacity")]
+        public async Task<IActionResult> UpdateCapacity([FromBody] Capacity capacity)
+        {
+            var result = await _servicioBD.updateCapacity(capacity);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("getClinicHours")]
+        public async Task<IActionResult> GetClinicHours()
+        {
+            var result = await _servicioBD.getClinicHours();
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("updateClinicHours")]
+        public async Task<IActionResult> UpdateClinicHours([FromBody] ClinicHours hours)
+        {
+            var result = await _servicioBD.updateClinicHours(hours);
+            return Ok(result);
+        }
+
+        [HttpGet]
         [Route("getSales")]
         public async Task<IActionResult> GetSales()
         {
