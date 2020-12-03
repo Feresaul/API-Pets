@@ -102,6 +102,14 @@ namespace DemoApiUsers.Controllers
         }
 
         [HttpGet]
+        [Route("getAppointments")]
+        public async Task<IActionResult> GetAppointments()
+        {
+            var result = await _servicioBD.getAppointments();
+            return Ok(result);
+        }
+
+        [HttpGet]
         [Route("getCapacity")]
         public async Task<IActionResult> GetCapacity()
         {

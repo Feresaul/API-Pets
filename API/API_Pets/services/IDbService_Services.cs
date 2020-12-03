@@ -25,5 +25,6 @@ namespace DemoApiUsers.services
         Task<ResponseBase<IEnumerable<Capacity>>> getCapacity();
         Task<ResponseBase<int>> updateClinicHours(ClinicHours hours);
         Task<ResponseBase<int>> updateCapacity(Capacity capacity);
+        Task<ResponseBase<IEnumerable<FullApointment>>> getAppointments();
     }
 }

@@ -22,6 +22,46 @@ namespace DemoApiUsers.services
             _connection = new SqlConnection(connString);
         }
 
+        public async Task<ResponseBase<IEnumerable<FullApointment>>> getAppointments()
+        {
+            try
+            {
+                var appointments = new List<FullApointment>();
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_get_appointments";
+                    SqlCommand command = new SqlCommand(sql, _connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    var reader = await command.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        Console.WriteLine(reader);
+                        var appointment = new FullApointment();
+                        appointment.id = int.Parse(reader["id"].ToString());
+                        appointment.username = reader["username"].ToString();
+                        appointment.service = reader["service"].ToString();
+                        appointment.enterDate = reader["enterDate"].ToString();
+                        appointment.outDate = reader["outDate"].ToString();
+                        appointment.status = reader["status"].ToString();
+                        appointments.Add(appointment);
+                    }
+                }
+
+                return new ResponseBase<IEnumerable<FullApointment>> { TieneError = false, Mensaje = "Appointments obtained correctly.", Modelo = appointments };
+            }
+            catch
+            {
+                return new ResponseBase<IEnumerable<FullApointment>> { TieneError = true, Mensaje = "Error while obtaining appointments.", Modelo = null };
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
         public async Task<ResponseBase<int>> addService(DetailedService service)
         {
             var param_name = new SqlParameter("@service", System.Data.SqlDbType.NVarChar, 100);
