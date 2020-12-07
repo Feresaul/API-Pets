@@ -61,6 +61,14 @@ namespace DemoApiUsers.Controllers
             return Ok(result);
         }
 
+        [HttpDelete]
+        [Route("completeAppointment")]
+        public async Task<IActionResult> CompleteAppointment(int idCita)
+        {
+            var result = await _servicioBD.completeAppointment(idCita);
+            return Ok(result);
+        }
+
         [HttpPost]
         [Route("agregarCita")]
         public async Task<IActionResult> AgregarCita([FromBody] Cita cita)
@@ -98,6 +106,14 @@ namespace DemoApiUsers.Controllers
         public async Task<IActionResult> GetServices()
         {
             var result = await _servicioBD.getServices();
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("addAppointment")]
+        public async Task<IActionResult> AddApointment([FromBody] FullApointment cita)
+        {
+            var result = await _servicioBD.addApointment(cita);
             return Ok(result);
         }
 

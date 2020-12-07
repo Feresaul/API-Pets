@@ -259,7 +259,7 @@ namespace DemoApiUsers.services
                         var cap = new Capacity();
                         cap.id = int.Parse(reader["id"].ToString());
                         cap.numberCapacity = int.Parse(reader["capacidad"].ToString());
-                        cap.description = reader["descripcion"].ToString();                        capacityList.Add(cap);
+                        cap.description = reader["descripcion"].ToString(); capacityList.Add(cap);
                     }
                 }
 
@@ -511,6 +511,44 @@ namespace DemoApiUsers.services
             return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = idCita };
         }
 
+        public async Task<ResponseBase<int>> completeAppointment(int idCita)
+        {
+            var param_idCita = new SqlParameter("@idCita", System.Data.SqlDbType.Int);
+            param_idCita.Value = idCita;
+
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+            var param_mensaje = new SqlParameter("@mensaje", System.Data.SqlDbType.NVarChar, -1);
+            param_mensaje.Direction = System.Data.ParameterDirection.Output;
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_complete_appointment";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_idCita);
+                    comando.Parameters.Add(param_error);
+                    comando.Parameters.Add(param_mensaje);
+                    var reader = await comando.ExecuteNonQueryAsync();
+
+                }
+            }
+            catch
+            {
+                return new ResponseBase<int> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = -1 };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = idCita };
+        }
+
         public async Task<ResponseBase<IEnumerable<ServicioCita>>> ObtenerHistorial(int idUsuario)
         {
             var param_idUsuario = new SqlParameter("@idUsuario", System.Data.SqlDbType.Int);
@@ -567,7 +605,7 @@ namespace DemoApiUsers.services
         public async Task<ResponseBase<IEnumerable<Servicio>>> ObtenerPorTipo(string tipo)
         {
             var param_tipo = new SqlParameter("@tipoServicio", System.Data.SqlDbType.NVarChar, 50);
-            param_tipo.Value = tipo; 
+            param_tipo.Value = tipo;
 
             var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
             param_error.Direction = System.Data.ParameterDirection.Output;
@@ -650,7 +688,7 @@ namespace DemoApiUsers.services
                         servicio.tipoServicio = reader["tipo"].ToString();
                         servicio.status = reader["status"].ToString();
                         servicio.fechaInicio = reader["fechaEntrada"].ToString();
-                        servicio.fechaTermino= reader["fechaSalida"].ToString();
+                        servicio.fechaTermino = reader["fechaSalida"].ToString();
                         listaServicios.Add(servicio);
                     }
                 }
@@ -665,6 +703,53 @@ namespace DemoApiUsers.services
                 _connection.Close();
             }
             return new ResponseBase<IEnumerable<ServicioCita>> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = listaServicios };
+        }
+
+        public async Task<ResponseBase<int>> addApointment(FullApointment cita)
+        {
+            var param_idUsuario = new SqlParameter("@idUsuario", System.Data.SqlDbType.Int);
+            param_idUsuario.Value = cita.id;
+            var param_idServicio = new SqlParameter("@type", System.Data.SqlDbType.NVarChar, -1);
+            param_idServicio.Value = cita.service;
+            var param_inicio = new SqlParameter("@inicio", System.Data.SqlDbType.DateTime);
+            param_inicio.Value = cita.enterDate;
+
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+            var param_mensaje = new SqlParameter("@mensaje", System.Data.SqlDbType.NVarChar, -1);
+            param_mensaje.Direction = System.Data.ParameterDirection.Output;
+            var param_idCita = new SqlParameter("@idCitaOut", System.Data.SqlDbType.Int);
+            param_idCita.Direction = System.Data.ParameterDirection.Output;
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_add_appointment";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_idUsuario);
+                    comando.Parameters.Add(param_idServicio);
+                    comando.Parameters.Add(param_inicio);
+                    comando.Parameters.Add(param_error);
+                    comando.Parameters.Add(param_mensaje);
+                    comando.Parameters.Add(param_idCita);
+                    var reader = await comando.ExecuteNonQueryAsync();
+
+                }
+            }
+            catch
+            {
+                return new ResponseBase<int> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = -1 };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = (int)param_idCita.Value };
         }
 
         public async Task<ResponseBase<int>> AgregarCita(Cita cita)
