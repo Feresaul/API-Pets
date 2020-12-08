@@ -53,6 +53,14 @@ namespace DemoApiUsers.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [Route("getPermits")]
+        public async Task<IActionResult> GetPermits(int idRol)
+        {
+            var result = await _servicioBD.getPermits(idRol);
+            return Ok(result);
+        }
+
         [HttpDelete]
         [Route("cancelarCita")]
         public async Task<IActionResult> CancelarCita(int idCita)
@@ -119,9 +127,9 @@ namespace DemoApiUsers.Controllers
 
         [HttpGet]
         [Route("getAppointments")]
-        public async Task<IActionResult> GetAppointments()
+        public async Task<IActionResult> GetAppointments(int idRol)
         {
-            var result = await _servicioBD.getAppointments();
+            var result = await _servicioBD.getAppointments(idRol);
             return Ok(result);
         }
 
@@ -130,6 +138,14 @@ namespace DemoApiUsers.Controllers
         public async Task<IActionResult> GetCapacity()
         {
             var result = await _servicioBD.getCapacity();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("getRoles")]
+        public async Task<IActionResult> GetRoles()
+        {
+            var result = await _servicioBD.getRoles();
             return Ok(result);
         }
 

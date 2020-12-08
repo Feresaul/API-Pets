@@ -37,6 +37,14 @@ namespace API_Pets.Controllers
         }
 
         [HttpPost]
+        [Route("registerEmployee")]
+        public async Task<IActionResult> RegisterEmployee([FromBody] Usuario usuario)
+        {
+            var result = await _servicioBD.registerEmployee(usuario);
+            return Ok(result);
+        }
+
+        [HttpPost]
         [Route("updateUser")]
         public async Task<IActionResult> UpdateUser([FromBody] Usuario user)
         {

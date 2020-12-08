@@ -23,10 +23,12 @@ namespace DemoApiUsers.services
         Task<ResponseBase<int>> addService(DetailedService service);
         Task<ResponseBase<int>> deleteService(int id);
         Task<ResponseBase<ClinicHours>> getClinicHours();
+        Task<ResponseBase<IEnumerable<Rol>>> getRoles();
         Task<ResponseBase<IEnumerable<Capacity>>> getCapacity();
         Task<ResponseBase<int>> updateClinicHours(ClinicHours hours);
         Task<ResponseBase<int>> updateCapacity(Capacity capacity);
-        Task<ResponseBase<IEnumerable<FullApointment>>> getAppointments();
+        Task<ResponseBase<IEnumerable<FullApointment>>> getAppointments(int idRol);
         Task<ResponseBase<int>> addApointment(FullApointment cita);
+        Task<ResponseBase<IEnumerable<string>>> getPermits(int idRol);
     }
 }

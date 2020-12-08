@@ -22,7 +22,7 @@ namespace DemoApiUsers.services
             _connection = new SqlConnection(connString);
         }
 
-        public async Task<ResponseBase<IEnumerable<FullApointment>>> getAppointments()
+        public async Task<ResponseBase<IEnumerable<FullApointment>>> getAppointments(int idRol)
         {
             try
             {
@@ -31,9 +31,14 @@ namespace DemoApiUsers.services
 
                 if (_connection.State == System.Data.ConnectionState.Open)
                 {
+                    var param_idRol = new SqlParameter("@idRol", System.Data.SqlDbType.Int);
+                    param_idRol.Value = idRol;
+
                     string sql = "mt_get_appointments";
                     SqlCommand command = new SqlCommand(sql, _connection);
                     command.CommandType = System.Data.CommandType.StoredProcedure;
+                    command.Parameters.Add(param_idRol);
+
                     var reader = await command.ExecuteReaderAsync();
 
                     while (reader.Read())
@@ -315,6 +320,41 @@ namespace DemoApiUsers.services
             }
             return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = 1 };
         }
+
+        public async Task<ResponseBase<IEnumerable<Rol>>> getRoles()
+        {
+            try
+            {
+                var roles = new List<Rol>();
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_get_roles";
+                    SqlCommand command = new SqlCommand(sql, _connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    var reader = await command.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        var rol = new Rol();
+                        rol.id = int.Parse(reader["idRol"].ToString());
+                        rol.description = reader["nombre"].ToString();
+                        roles.Add(rol);
+                    }
+                }
+
+                return new ResponseBase<IEnumerable<Rol>> { TieneError = false, Mensaje = "Roles obtained correctly.", Modelo = roles };
+            }
+            catch
+            {
+                return new ResponseBase<IEnumerable<Rol>> { TieneError = true, Mensaje = "Error while obtaining roles.", Modelo = null };
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
         public async Task<ResponseBase<ClinicHours>> getClinicHours()
         {
             try
@@ -548,6 +588,45 @@ namespace DemoApiUsers.services
             }
             return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = idCita };
         }
+
+        public async Task<ResponseBase<IEnumerable<string>>> getPermits(int idRol)
+        {
+            var param_idusuario = new SqlParameter("@idRol", System.Data.SqlDbType.Int);
+            param_idusuario.Value = idRol;
+
+            try
+            {
+                _connection.Open();
+
+                var permits = new List<string>();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = $"mt_get_permits";
+                    SqlCommand command = new SqlCommand(sql, _connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    command.Parameters.Add(param_idusuario);
+
+                    var reader = await command.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        string permit = reader["ventana"].ToString();
+                        permits.Add(permit);
+                    }
+                }
+
+                return new ResponseBase<IEnumerable<string>> { TieneError = false, Mensaje = "Permits obtained correctly", Modelo = permits };
+            }
+            catch
+            {
+                return new ResponseBase<IEnumerable<string>> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = null };
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        } 
 
         public async Task<ResponseBase<IEnumerable<ServicioCita>>> ObtenerHistorial(int idUsuario)
         {
