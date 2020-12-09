@@ -13,5 +13,7 @@ namespace API_Pets.models
         public string nombreCompleto { set; get; }
         public string email { set; get; }
         public string telefono { set; get; }
+        public int idRol { set; get; }
+        public string rol { set; get; }
     }
 }

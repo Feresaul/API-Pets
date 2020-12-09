@@ -98,6 +98,8 @@ namespace API_Pets.services
                         usuario.usuario = reader["usuario"].ToString();
                         usuario.email = reader["correo"].ToString();
                         usuario.telefono = reader["telefono"].ToString();
+                        usuario.idRol = int.Parse(reader["idRol"].ToString());
+                        usuario.rol = reader["rol"].ToString();
                     }
                 }
 
@@ -140,6 +142,8 @@ namespace API_Pets.services
                         user.usuario = reader["usuario"].ToString();
                         user.email = reader["correo"].ToString();
                         user.telefono = reader["telefono"].ToString();
+                        user.idRol = int.Parse(reader["idRol"].ToString());
+                        user.rol = reader["rol"].ToString();
                         userList.Add(user);
                     }
                 }
@@ -195,6 +199,9 @@ namespace API_Pets.services
             var param_id = new SqlParameter("@id", System.Data.SqlDbType.Int);
             param_id.Value = user.id;
 
+            var param_idRol = new SqlParameter("@idRol", System.Data.SqlDbType.Int);
+            param_idRol.Value = user.idRol;
+
             var param_name = new SqlParameter("@name", System.Data.SqlDbType.NVarChar, -1);
             param_name.Value = user.nombreCompleto;
 
@@ -226,6 +233,7 @@ namespace API_Pets.services
                     comando.Parameters.Add(param_phone);
                     comando.Parameters.Add(param_user);
                     comando.Parameters.Add(param_id);
+                    comando.Parameters.Add(param_idRol);
                     comando.Parameters.Add(param_error);
                     comando.Parameters.Add(param_mensaje);
                     var reader = await comando.ExecuteNonQueryAsync();
@@ -278,6 +286,66 @@ namespace API_Pets.services
                     SqlCommand comando = new SqlCommand(sql, _connection);
                     comando.CommandType = System.Data.CommandType.StoredProcedure;
                     comando.Parameters.Add(param_usuario);
+                    comando.Parameters.Add(param_nombre);
+                    comando.Parameters.Add(param_correo);
+                    comando.Parameters.Add(param_tel);
+                    comando.Parameters.Add(param_contrasenia);
+                    comando.Parameters.Add(param_id);
+                    comando.Parameters.Add(param_error);
+                    comando.Parameters.Add(param_mensaje);
+                    var reader = await comando.ExecuteNonQueryAsync();
+
+                }
+            }
+            catch
+            {
+                return new ResponseBase<int> { TieneError = true, Mensaje = "Error interno. Consulte al administrador del sistema.", Modelo = -1 };
+
+            }
+            finally
+            {
+                _connection.Close();
+            }
+            return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = (int)param_id.Value };
+        }
+
+        public async Task<ResponseBase<int>> registerEmployee(Usuario usuario)
+        {
+            var param_usuario = new SqlParameter("@usuario", System.Data.SqlDbType.NVarChar, 50);
+            param_usuario.Value = usuario.usuario;
+            var param_idRol = new SqlParameter("@idRol", System.Data.SqlDbType.Int);
+            param_idRol.Value = usuario.idRol;
+            var param_nombre = new SqlParameter("@nombre", System.Data.SqlDbType.NVarChar, 100);
+            param_nombre.Value = usuario.nombreCompleto;
+            var param_correo = new SqlParameter("@correo", System.Data.SqlDbType.NVarChar, 100);
+            param_correo.Value = usuario.email;
+            var param_tel = new SqlParameter("@tel", System.Data.SqlDbType.NVarChar, 50);
+            param_tel.Value = usuario.telefono;
+
+            var contrasenia = new Helper().SHA1(usuario.contrasenia);
+
+            var param_contrasenia = new SqlParameter("@contrasenia", System.Data.SqlDbType.NVarChar, -1);
+            param_contrasenia.Value = contrasenia;
+
+            var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
+            param_error.Direction = System.Data.ParameterDirection.Output;
+            var param_mensaje = new SqlParameter("@mensaje", System.Data.SqlDbType.NVarChar, -1);
+            param_mensaje.Direction = System.Data.ParameterDirection.Output;
+            var param_id = new SqlParameter("@idUsuario", System.Data.SqlDbType.Int);
+            param_id.Direction = System.Data.ParameterDirection.Output;
+
+
+            try
+            {
+                _connection.Open();
+
+                if (_connection.State == System.Data.ConnectionState.Open)
+                {
+                    string sql = "mt_register_employee";
+                    SqlCommand comando = new SqlCommand(sql, _connection);
+                    comando.CommandType = System.Data.CommandType.StoredProcedure;
+                    comando.Parameters.Add(param_usuario);
+                    comando.Parameters.Add(param_idRol);
                     comando.Parameters.Add(param_nombre);
                     comando.Parameters.Add(param_correo);
                     comando.Parameters.Add(param_tel);

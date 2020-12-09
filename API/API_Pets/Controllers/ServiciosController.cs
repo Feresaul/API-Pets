@@ -53,11 +53,27 @@ namespace DemoApiUsers.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [Route("getPermits")]
+        public async Task<IActionResult> GetPermits(int idRol)
+        {
+            var result = await _servicioBD.getPermits(idRol);
+            return Ok(result);
+        }
+
         [HttpDelete]
         [Route("cancelarCita")]
         public async Task<IActionResult> CancelarCita(int idCita)
         {
             var result = await _servicioBD.CancelarCita(idCita);
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        [Route("completeAppointment")]
+        public async Task<IActionResult> CompleteAppointment(int idCita, int idEmployee)
+        {
+            var result = await _servicioBD.completeAppointment(idCita, idEmployee);
             return Ok(result);
         }
 
@@ -101,11 +117,35 @@ namespace DemoApiUsers.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
+        [Route("addAppointment")]
+        public async Task<IActionResult> AddApointment([FromBody] FullApointment cita)
+        {
+            var result = await _servicioBD.addApointment(cita);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("getAppointments")]
+        public async Task<IActionResult> GetAppointments(int idRol)
+        {
+            var result = await _servicioBD.getAppointments(idRol);
+            return Ok(result);
+        }
+
         [HttpGet]
         [Route("getCapacity")]
         public async Task<IActionResult> GetCapacity()
         {
             var result = await _servicioBD.getCapacity();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("getRoles")]
+        public async Task<IActionResult> GetRoles()
+        {
+            var result = await _servicioBD.getRoles();
             return Ok(result);
         }
 

@@ -13,6 +13,7 @@ namespace DemoApiUsers.services
         Task<ResponseBase<IEnumerable<ServicioCita>>> ObtenerHistorial(int idUsuario);
         Task<ResponseBase<IEnumerable<ServicioCita>>> ObtenerCitasPendientes(int idUsuario);
         Task<ResponseBase<int>> CancelarCita(int idCita);
+        Task<ResponseBase<int>> completeAppointment(int idCita, int idEmployee);
         Task<ResponseBase<int>> AgregarCita(Cita cita);
         Task<ResponseBase<Horas<IEnumerable<string>>>> ObtenerHoras(ServicioHoras servicio);
         Task<ResponseBase<IEnumerable<Venta>>> getSales();
@@ -22,8 +23,12 @@ namespace DemoApiUsers.services
         Task<ResponseBase<int>> addService(DetailedService service);
         Task<ResponseBase<int>> deleteService(int id);
         Task<ResponseBase<ClinicHours>> getClinicHours();
+        Task<ResponseBase<IEnumerable<Rol>>> getRoles();
         Task<ResponseBase<IEnumerable<Capacity>>> getCapacity();
         Task<ResponseBase<int>> updateClinicHours(ClinicHours hours);
         Task<ResponseBase<int>> updateCapacity(Capacity capacity);
+        Task<ResponseBase<IEnumerable<FullApointment>>> getAppointments(int idRol);
+        Task<ResponseBase<int>> addApointment(FullApointment cita);
+        Task<ResponseBase<IEnumerable<string>>> getPermits(int idRol);
     }
 }
