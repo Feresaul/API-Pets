@@ -551,10 +551,12 @@ namespace DemoApiUsers.services
             return new ResponseBase<int> { TieneError = (bool)param_error.Value, Mensaje = param_mensaje.Value.ToString(), Modelo = idCita };
         }
 
-        public async Task<ResponseBase<int>> completeAppointment(int idCita)
+        public async Task<ResponseBase<int>> completeAppointment(int idCita, int idEmployee)
         {
-            var param_idCita = new SqlParameter("@idCita", System.Data.SqlDbType.Int);
+            var param_idCita = new SqlParameter("@idcita", System.Data.SqlDbType.Int);
             param_idCita.Value = idCita;
+            var param_idEmployee = new SqlParameter("@idemployee", System.Data.SqlDbType.Int);
+            param_idEmployee.Value = idEmployee;
 
             var param_error = new SqlParameter("@error", System.Data.SqlDbType.Bit);
             param_error.Direction = System.Data.ParameterDirection.Output;
@@ -571,6 +573,7 @@ namespace DemoApiUsers.services
                     SqlCommand comando = new SqlCommand(sql, _connection);
                     comando.CommandType = System.Data.CommandType.StoredProcedure;
                     comando.Parameters.Add(param_idCita);
+                    comando.Parameters.Add(param_idEmployee);
                     comando.Parameters.Add(param_error);
                     comando.Parameters.Add(param_mensaje);
                     var reader = await comando.ExecuteNonQueryAsync();
@@ -788,7 +791,7 @@ namespace DemoApiUsers.services
         {
             var param_idUsuario = new SqlParameter("@idUsuario", System.Data.SqlDbType.Int);
             param_idUsuario.Value = cita.id;
-            var param_idServicio = new SqlParameter("@type", System.Data.SqlDbType.NVarChar, -1);
+            var param_idServicio = new SqlParameter("@idService", System.Data.SqlDbType.Int);
             param_idServicio.Value = cita.service;
             var param_inicio = new SqlParameter("@inicio", System.Data.SqlDbType.DateTime);
             param_inicio.Value = cita.enterDate;

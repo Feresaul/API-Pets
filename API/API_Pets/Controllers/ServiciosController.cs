@@ -71,9 +71,9 @@ namespace DemoApiUsers.Controllers
 
         [HttpDelete]
         [Route("completeAppointment")]
-        public async Task<IActionResult> CompleteAppointment(int idCita)
+        public async Task<IActionResult> CompleteAppointment(int idCita, int idEmployee)
         {
-            var result = await _servicioBD.completeAppointment(idCita);
+            var result = await _servicioBD.completeAppointment(idCita, idEmployee);
             return Ok(result);
         }
 
